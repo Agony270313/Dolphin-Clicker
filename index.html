@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dolphin Clicker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-container">
+          <img src="assets/logo.png" alt="Dolphin Clicker Logo" class="brand-logo">
+        </div>
+        <div class="brand-info">
+          <h2>Dolphin</h2>
+          <span>Clicker v1.0.0</span>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="stats">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Stats & Visuals</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+        <button class="nav-item" data-tab="help">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Hotkey Guide</span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="status-summary">
+          <div class="indicator-ring pulsing" id="global-active-indicator"></div>
+          <span id="global-status-text">Ready to Click</span>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Action Bar -->
+      <header class="top-header">
+        <div class="header-title">
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-description">Configure and manage your mouse and keyboard click spamming tasks.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary btn-icon" id="stop-all-btn" title="Stop all running clickers (F8)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg>
+            <span>Stop All</span>
+          </button>
+          <button class="btn btn-primary btn-icon" id="add-clicker-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New Clicker</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Pages -->
+      <div class="content-body">
+        
+        <!-- Tab: Dashboard -->
+        <section class="tab-content active" id="tab-dashboard">
+          <div class="clicker-grid" id="clicker-container">
+            <!-- Dynamic Clicker Cards will go here -->
+            <div class="empty-state" id="empty-state">
+              <div class="empty-icon-wrapper">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              </div>
+              <h3>No clickers configured</h3>
+              <p>Add a mouse or keyboard clicker to start automate clicking tasks.</p>
+              <button class="btn btn-primary" id="empty-add-btn">Add First Clicker</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Stats -->
+        <section class="tab-content" id="tab-stats">
+          <div class="stats-container">
+            <div class="stats-row">
+              
+              <!-- Dial Widget -->
+              <div class="stats-card dial-card">
+                <h3>Live Activity</h3>
+                <div class="dial-container">
+                  <svg class="dial" viewBox="0 0 100 100">
+                    <circle class="dial-bg" cx="50" cy="50" r="45" />
+                    <circle class="dial-fill" id="stats-cps-dial" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283" />
+                  </svg>
+                  <div class="dial-info">
+                    <span class="dial-value" id="stats-total-cps">0.0</span>
+                    <span class="dial-label">Total Clicks/S</span>
+                  </div>
+                </div>
+                <div class="pulsing-wave-wrapper">
+                  <div class="pulse-wave" id="visualizer-wave"></div>
+                  <div class="pulse-wave wave-delayed" id="visualizer-wave-2"></div>
+                </div>
+              </div>
+
+              <!-- Info Cards Grid -->
+              <div class="stats-info-grid">
+                <div class="stats-card info-card">
+                  <span class="info-label">Total Clicks Spammed</span>
+                  <span class="info-val" id="stats-total-clicks">0</span>
+                  <span class="info-sub">This Session</span>
+                </div>
+                <div class="stats-card info-card">
+                  <span class="info-label">Active Spammers</span>
+                  <span class="info-val" id="stats-active-count">0</span>
+                  <span class="info-sub">Running in Background</span>
+                </div>
+                <div class="stats-card info-card">
+                  <span class="info-label">Time Elapsed</span>
+                  <span class="info-val" id="stats-elapsed-time">00:00:00</span>
+                  <span class="info-sub">Active duration</span>
+                </div>
+                <div class="stats-card info-card">
+                  <span class="info-label">Peak Speed</span>
+                  <span class="info-val" id="stats-peak-cps">0 CPS</span>
+                  <span class="info-sub">Highest record</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Settings -->
+        <section class="tab-content" id="tab-settings">
+          <div class="settings-container">
+            <div class="settings-group card">
+              <h2>Application Settings</h2>
+              
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Minimize to Tray on Close</label>
+                  <p>When clicking the 'X' button, hide the application in the system tray instead of closing.</p>
+                </div>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="setting-tray" checked>
+                  <label for="setting-tray"></label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Toggle Sound Effects</label>
+                  <p>Play a subtle confirmation sound when turning clickers on or off.</p>
+                </div>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="setting-sound" checked>
+                  <label for="setting-sound"></label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Start on Boot</label>
+                  <p>Launch Dolphin Clicker automatically when Windows starts.</p>
+                </div>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="setting-startup">
+                  <label for="setting-startup"></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group card">
+              <h2>Aesthetic Theme</h2>
+              <p style="color: var(--text-secondary); margin-bottom: 16px;">Customize the visual accent of the GUI to match your setup.</p>
+              <div class="theme-picker">
+                <button class="theme-color-btn active" data-color="teal" style="background-color: #1aaeb0;" title="Dolphin Teal"></button>
+                <button class="theme-color-btn" data-color="indigo" style="background-color: #6366f1;" title="Electric Indigo"></button>
+                <button class="theme-color-btn" data-color="violet" style="background-color: #8b5cf6;" title="Neon Violet"></button>
+                <button class="theme-color-btn" data-color="crimson" style="background-color: #f43f5e;" title="Crimson Red"></button>
+                <button class="theme-color-btn" data-color="orange" style="background-color: #f97316;" title="Sunset Orange"></button>
+              </div>
+            </div>
+            
+            <div class="settings-group card text-center warning-card-footer">
+              <p>Dolphin Clicker is developed for efficiency. Use responsibly in online gaming environments.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Help -->
+        <section class="tab-content" id="tab-help">
+          <div class="help-container">
+            <div class="card help-card">
+              <h2>How to use Dolphin Clicker</h2>
+              <ol class="help-list">
+                <li>
+                  <strong>Add a Clicker Profile</strong>: Click on the <strong>"New Clicker"</strong> button. Select whether you want to automate mouse clicks or keyboard key strokes.
+                </li>
+                <li>
+                  <strong>Configure Settings</strong>:
+                  <ul>
+                    <li>Choose your trigger action (Left Click, Right Click, or a custom keyboard key).</li>
+                    <li>Specify the spamming speed. You can input the speed either in <strong>Interval (ms)</strong> or <strong>Speed (Clicks Per Second)</strong>. The program will auto-calculate the other.</li>
+                    <li>Set a custom toggle hotkey (e.g. <code>F6</code> or <code>F9</code>).</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Toggle Clicking</strong>: Press the configured hotkey while in-game or in another window. The clicker will start/stop immediately in the background. You can also click the play/stop icon on the dashboard card.
+                </li>
+                <li>
+                  <strong>Stop All Instantly</strong>: Press <code>F8</code> (default master hotkey) or click the **"Stop All"** button at the top header to immediately stop all running clicking scripts.
+                </li>
+              </ol>
+            </div>
+
+            <div class="card help-card">
+              <h2>Global Shortcuts Info</h2>
+              <table class="help-table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Shortcut</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Master Emergency Stop</td>
+                    <td><kbd>F8</kbd></td>
+                    <td>Global (Works everywhere)</td>
+                  </tr>
+                  <tr>
+                    <td>Individual Clickers</td>
+                    <td>Custom (e.g., <kbd>F6</kbd>, <kbd>F9</kbd>)</td>
+                    <td>Global (Assigned in Clicker Settings)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="alert note-alert">
+                <strong>Notice:</strong> If a hotkey does not register, it might already be occupied by Windows or another running game. Try changing it to a different key combination (e.g., <code>Ctrl+F6</code>).
+              </div>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Add / Edit Clicker -->
+  <div class="modal-overlay" id="clicker-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">New Clicker Profile</h2>
+        <button class="modal-close-btn" id="modal-close-x">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="clicker-form">
+          <input type="hidden" id="edit-clicker-id" value="">
+          
+          <div class="form-group">
+            <label for="clicker-name">Profile Name</label>
+            <input type="text" id="clicker-name" placeholder="e.g. Left Click Spammer" required>
+          </div>
+
+          <div class="form-group">
+            <label>Clicker Action Type</label>
+            <div class="radio-tab-group">
+              <label class="radio-tab">
+                <input type="radio" name="clicker-type" value="mouse" checked id="type-mouse">
+                <span class="radio-tab-btn">Mouse click</span>
+              </label>
+              <label class="radio-tab">
+                <input type="radio" name="clicker-type" value="keyboard" id="type-keyboard">
+                <span class="radio-tab-btn">Keyboard key</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Mouse Options -->
+          <div class="form-row-group" id="mouse-options-panel">
+            <div class="form-group flex-1">
+              <label for="mouse-button">Mouse Button</label>
+              <select id="mouse-button">
+                <option value="left">Left Click</option>
+                <option value="right">Right Click</option>
+                <option value="middle">Middle Click</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="mouse-click-type">Click Mode</label>
+              <select id="mouse-click-type">
+                <option value="single">Single Click</option>
+                <option value="double">Double Click</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Keyboard Options -->
+          <div class="form-group" id="keyboard-options-panel" style="display: none;">
+            <label for="keyboard-key-display">Key to Spam</label>
+            <div class="key-recorder-container">
+              <input type="text" id="keyboard-key-display" placeholder="Click to record key..." readonly class="key-recorder-input">
+              <input type="hidden" id="keyboard-key-vk" value="">
+              <span class="key-recorder-hint">Press any key when focused</span>
+            </div>
+          </div>
+
+          <!-- Speed Options -->
+          <div class="form-group">
+            <label>Spam Speed / Speed Settings</label>
+            <div class="form-row-group align-end">
+              <div class="form-group flex-1">
+                <label for="speed-ms" class="sub-label">Interval (Milliseconds)</label>
+                <input type="number" id="speed-ms" min="1" max="100000" value="50">
+              </div>
+              <div class="form-group-center flex-0 text-center font-bold" style="padding-bottom: 10px; min-width: 32px; color: var(--text-muted)">
+                or
+              </div>
+              <div class="form-group flex-1">
+                <label for="speed-cps" class="sub-label">Clicks / Sec (CPS)</label>
+                <input type="number" id="speed-cps" min="0.01" max="1000" value="20" step="any">
+              </div>
+            </div>
+            <!-- Speed Slider -->
+            <div class="slider-container" style="margin-top: 10px;">
+              <input type="range" id="speed-slider" min="1" max="100" value="20" class="speed-slider">
+              <div class="slider-limits">
+                <span>Slow (1 CPS)</span>
+                <span>Fast (100 CPS)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hotkey Configuration -->
+          <div class="form-group">
+            <label for="toggle-hotkey-display">Toggle Hotkey</label>
+            <div class="key-recorder-container">
+              <input type="text" id="toggle-hotkey-display" placeholder="Click to record hotkey (e.g. F6)..." readonly class="key-recorder-input" required>
+              <input type="hidden" id="toggle-hotkey-val" value="">
+              <span class="key-recorder-hint">Press key to set activation shortcut</span>
+            </div>
+          </div>
+
+          <!-- Click Limit Options -->
+          <div class="form-group">
+            <div class="checkbox-container">
+              <input type="checkbox" id="run-infinitely" checked>
+              <label for="run-infinitely">Click infinitely until stopped</label>
+            </div>
+            <div class="form-group limit-input-wrapper" id="limit-count-wrapper" style="display: none; margin-top: 10px;">
+              <label for="limit-count">Stop after this many clicks:</label>
+              <input type="number" id="limit-count" min="1" value="100" placeholder="100">
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+        <button class="btn btn-primary" id="modal-save-btn">Save Clicker</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio-click-on" src=""></audio>
+  <audio id="audio-click-off" src=""></audio>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "dolphin-clicker",
+  "version": "1.0.0",
+  "description": "High-performance custom auto clicker with keyboard and mouse spamming support.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:backend": "compile.bat",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "autoclicker",
+    "mouse-clicker",
+    "keyboard-spammer",
+    "dolphin"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "dolphin.clicker",
+    "productName": "Dolphin Clicker",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.ico"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "styles.css",
+      "renderer.js",
+      "clicker.exe",
+      "assets/**/*"
+    ]
+  }
+}
