@@ -78,7 +78,8 @@ function startClickerBackend() {
 
   console.log("Spawning clicker backend: " + exePath);
   clickerProcess = spawn(exePath, [], {
-    stdio: ['pipe', 'pipe', 'inherit']
+    stdio: ['pipe', 'pipe', 'inherit'],
+    windowsHide: true
   });
 
   clickerProcess.stdout.on('data', (data) => {
