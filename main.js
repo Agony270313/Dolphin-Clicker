@@ -65,7 +65,7 @@ function createWindow() {
 
 // Start C# backend process
 function startClickerBackend() {
-  const exePath = path.join(__dirname, 'clicker.exe');
+  const exePath = path.join(__dirname, 'clicker.exe').replace('app.asar', 'app.asar.unpacked');
   
   if (!fs.existsSync(exePath)) {
     console.error("Backend executable not found at: " + exePath);
