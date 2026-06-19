@@ -3,6 +3,18 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+// Define Assembly metadata to establish publisher reputation
+[assembly: System.Reflection.AssemblyTitle("Dolphin Clicker Engine")]
+[assembly: System.Reflection.AssemblyDescription("High-performance simulation module for Dolphin Clicker")]
+[assembly: System.Reflection.AssemblyConfiguration("")]
+[assembly: System.Reflection.AssemblyCompany("Agony270313")]
+[assembly: System.Reflection.AssemblyProduct("Dolphin Clicker")]
+[assembly: System.Reflection.AssemblyCopyright("Copyright © 2026 Agony270313")]
+[assembly: System.Reflection.AssemblyTrademark("")]
+[assembly: System.Reflection.AssemblyCulture("")]
+[assembly: System.Reflection.AssemblyVersion("1.0.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.0.0.0")]
+
 class DolphinClickerBackend {
     [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
     public static extern uint TimeBeginPeriod(uint uMilliseconds);
@@ -10,19 +22,59 @@ class DolphinClickerBackend {
     [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
     public static extern uint TimeEndPeriod(uint uMilliseconds);
 
-    [DllImport("user32.dll")]
-    static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-    [DllImport("user32.dll")]
-    static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+    // Win32 Struct definitions for SendInput
+    [StructLayout(LayoutKind.Sequential)]
+    struct INPUT {
+        public uint type;
+        public InputUnion U;
+    }
 
-    const int MOUSEEVENTF_LEFTDOWN = 0x02;
-    const int MOUSEEVENTF_LEFTUP = 0x04;
-    const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-    const int MOUSEEVENTF_RIGHTUP = 0x10;
-    const int MOUSEEVENTF_MIDDLEDOWN = 0x20;
-    const int MOUSEEVENTF_MIDDLEUP = 0x40;
-    const int KEYEVENTF_KEYUP = 0x0002;
+    [StructLayout(LayoutKind.Explicit)]
+    struct InputUnion {
+        [FieldOffset(0)] public MOUSEINPUT mi;
+        [FieldOffset(0)] public KEYBDINPUT ki;
+        [FieldOffset(0)] public HARDWAREINPUT hi;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct MOUSEINPUT {
+        public int dx;
+        public int dy;
+        public uint mouseData;
+        public uint dwFlags;
+        public uint time;
+        public IntPtr dwExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct KEYBDINPUT {
+        public ushort wVk;
+        public ushort wScan;
+        public uint dwFlags;
+        public uint time;
+        public IntPtr dwExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct HARDWAREINPUT {
+        public uint uMsg;
+        public ushort wParamL;
+        public ushort wParamH;
+    }
+
+    const uint INPUT_MOUSE = 0;
+    const uint INPUT_KEYBOARD = 1;
+
+    const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
+    const uint MOUSEEVENTF_LEFTUP = 0x0004;
+    const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+    const uint MOUSEEVENTF_RIGHTUP = 0x0010;
+    const uint MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+    const uint MOUSEEVENTF_MIDDLEUP = 0x0040;
+    const uint KEYEVENTF_KEYUP = 0x0002;
 
     static ConcurrentDictionary<string, ClickerTask> activeTasks = new ConcurrentDictionary<string, ClickerTask>();
 
@@ -53,8 +105,6 @@ class DolphinClickerBackend {
                 
                 string command = parts[0].ToLower();
                 if (command == "start") {
-                    // start <id> mouse <button> <click_type> <interval_ms> [click_limit]
-                    // start <id> keyboard <key_code> <interval_ms> [click_limit]
                     string id = parts[1];
                     string type = parts[2].ToLower();
                     
@@ -130,8 +180,8 @@ class DolphinClickerBackend {
     }
 
     static void RunMouseClicker(ClickerTask task) {
-        int downFlag = MOUSEEVENTF_LEFTDOWN;
-        int upFlag = MOUSEEVENTF_LEFTUP;
+        uint downFlag = MOUSEEVENTF_LEFTDOWN;
+        uint upFlag = MOUSEEVENTF_LEFTUP;
         
         if (task.Button == "right") {
             downFlag = MOUSEEVENTF_RIGHTDOWN;
@@ -141,16 +191,36 @@ class DolphinClickerBackend {
             upFlag = MOUSEEVENTF_MIDDLEUP;
         }
         
+        int inputSize = Marshal.SizeOf(typeof(INPUT));
+        
         while (task.Running) {
-            mouse_event(downFlag, 0, 0, 0, 0);
-            mouse_event(upFlag, 0, 0, 0, 0);
+            // Send Click Down and Up using SendInput API
+            INPUT[] inputs = new INPUT[2];
+            
+            inputs[0] = new INPUT();
+            inputs[0].type = INPUT_MOUSE;
+            inputs[0].U.mi.dwFlags = downFlag;
+            
+            inputs[1] = new INPUT();
+            inputs[1].type = INPUT_MOUSE;
+            inputs[1].U.mi.dwFlags = upFlag;
+            
+            SendInput(2, inputs, inputSize);
             task.ClickCount++;
             Console.WriteLine("STAT " + task.Id + " " + task.ClickCount);
             
             if (task.ClickType == "double") {
                 Thread.Sleep(10);
-                mouse_event(downFlag, 0, 0, 0, 0);
-                mouse_event(upFlag, 0, 0, 0, 0);
+                
+                inputs[0] = new INPUT();
+                inputs[0].type = INPUT_MOUSE;
+                inputs[0].U.mi.dwFlags = downFlag;
+                
+                inputs[1] = new INPUT();
+                inputs[1].type = INPUT_MOUSE;
+                inputs[1].U.mi.dwFlags = upFlag;
+                
+                SendInput(2, inputs, inputSize);
                 task.ClickCount++;
                 Console.WriteLine("STAT " + task.Id + " " + task.ClickCount);
             }
@@ -168,9 +238,24 @@ class DolphinClickerBackend {
     }
 
     static void RunKeyboardSpammer(ClickerTask task) {
+        int inputSize = Marshal.SizeOf(typeof(INPUT));
+        
         while (task.Running) {
-            keybd_event(task.KeyCode, 0, 0, 0); // Down
-            keybd_event(task.KeyCode, 0, KEYEVENTF_KEYUP, 0); // Up
+            INPUT[] inputs = new INPUT[2];
+            
+            // Key Down
+            inputs[0] = new INPUT();
+            inputs[0].type = INPUT_KEYBOARD;
+            inputs[0].U.ki.wVk = task.KeyCode;
+            inputs[0].U.ki.dwFlags = 0;
+            
+            // Key Up
+            inputs[1] = new INPUT();
+            inputs[1].type = INPUT_KEYBOARD;
+            inputs[1].U.ki.wVk = task.KeyCode;
+            inputs[1].U.ki.dwFlags = KEYEVENTF_KEYUP;
+            
+            SendInput(2, inputs, inputSize);
             task.ClickCount++;
             Console.WriteLine("STAT " + task.Id + " " + task.ClickCount);
             
